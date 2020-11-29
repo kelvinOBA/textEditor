@@ -10,13 +10,14 @@
 
       <div class="shadow data-item animate__animated animate__fadeInUp" v-if="savedData">
         <p>{{ savedData.text }}</p>
-          <p style="font-size:12px; color:#bab2b2"> {{ savedData.dateCreated | formatTime}}</p>
+        
         <img
           :src="savedData.image"
           :height="savedData.imageHeight"
           alt=""
           v-if="savedData.image !== null"
         />
+          <p style="font-size:12px; color:#bab2b2"> {{ savedData.dateCreated | formatTime}}</p>
         <div style="margin-top:10px; display:flex">
           <button @click="editData()" class="crud-btn edit-bg">
             edit
