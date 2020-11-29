@@ -17,7 +17,7 @@
           alt=""
           v-if="savedData.image !== null"
         />
-        <div style="margin-top:10px">
+        <div style="margin-top:10px; display:flex">
           <button @click="editData()" class="crud-btn edit-bg">
             edit
           </button>
