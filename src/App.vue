@@ -49,6 +49,9 @@ $black:#000;
 .margin-20{
   margin-top:20px;
 }
+.margin-10{
+  margin-top:10px;
+}
 .nav-btn{
   background:$white;
   color:$black;
@@ -56,4 +59,10 @@ $black:#000;
 .data-item{
   text-align:left; min-height:100px; background:#fff; margin-top:40px; padding:10px; margin-bottom:12px; overflow:hidden; border-radius:12px
 }
+
+
+.pointer {
+  cursor: pointer;
+}
+
 </style>

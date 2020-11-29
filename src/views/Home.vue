@@ -1,21 +1,21 @@
 <template>
-  <div class="home bg-cover">
+  <div class="home bg-cover " style="position:relative; margin:0 auto">
     <div>
       <button
         style="margin-bottom:20px"
-        class="pointer crud-btn nav-btn margin-20  nav-btn shadow"
+        class="pointer crud-btn nav-btn margin-20  nav-btn shadow "
         @click="viewAllData"
       >
-        See list
+        See list <i class="fa fa-th-list"></i>
       </button>
     </div>
     <div
-      class="text-editor shadow"
+      class="text-editor shadow animate__animated animate__slideInUp"
       id="dragme"
       :style="{ top: dragTop, left: dragLeft }"
     >
       <div
-        style="min-height:50px; background:#f2f2f2;display:flex; cursor:move; text-align"
+        class="drag-div"
         @mousedown.stop="onMouseClick($event)"
         @mouseup.stop="onMouseUp($event)"
         @mousemove.stop="onMouseMove($event)"
@@ -24,7 +24,7 @@
       </div>
       <div
         contenteditable="true"
-        style="text-align:left; min-height:300px; padding:10px"
+        style="text-align:left; min-height:200px; padding:10px"
         class="edit-box"
         @click.stop="removeImageBorder"
       >
@@ -34,6 +34,7 @@
             :src="imageFile"
             alt=""
             :height="imageHeight"
+            class="margin-10"
             :class="{ 'border-active': imageBorder }"
             v-if="this.imageFile !== null"
             @click.stop="addBorder"
@@ -42,10 +43,10 @@
       </div>
 
       <div
-        style="margin:10px; min-height:50px; text-align:right; overflow:hidden"
+        style="margin:10px; min-height:30px; text-align:right; overflow:hidden"
       >
         <p class="animate__animated animate__bounceInUp" v-if="dataSaved">
-          data saved
+          {{ dataMessage }}
         </p>
       </div>
 
@@ -62,6 +63,21 @@
             @change="getTextColor"
           />
         </div>
+
+        <div>
+          <i class="fa fa-font margin-right-5"></i>
+          <select
+            @change.stop="changeFontSize($event)"
+            v-model="fontSize"
+            class="pointer"
+            style="min-height:30px"
+            title="change font size"
+          >
+            <option v-for="(size, index) in fontSizes" :key="index + 1">
+              {{ size }}</option
+            >
+          </select>
+        </div>
         <div>
           <label for="imageInput" class="pointer" title="upload image"
             ><i class="fa fa-file-image-o fa-icon"></i
@@ -76,13 +92,13 @@
         </div>
         <div v-if="imageFile !== null">
           <select
-            @change.stop="changeFontSize($event)"
+            @change.stop="changeImageSize($event)"
             v-model="fontSize"
             class="pointer"
             style="min-height:30px"
             title="change image width"
           >
-            <option v-for="(size, index) in imageSizes" :key="index+1"  :selected="index == 0">
+            <option v-for="(size, index) in imageSizes" :key="index + 1">
               {{ size }}</option
             >
           </select>
@@ -103,10 +119,12 @@ export default {
     return {
       imageFile: null,
       textColor: "",
+      dataMessage: "data saved",
       imageSizes: [100, 120, 193, 219],
-      fontSize: 18,
+      fontSizes: ["2", "5", "7"],
+      fontSize: 2,
       dragTop: "100px",
-      dragLeft: "200px",
+      dragLeft: "500px",
       prevX: 20,
       prevY: 20,
       dataSaved: false,
@@ -160,15 +178,28 @@ export default {
       document.execCommand("foreColor", false, this.textColor);
     },
     changeFontSize(e) {
-      this.imageHeight = this.fontSize;
       document.execCommand("fontSize", false, this.fontSize);
+    },
+    changeImageSize(e) {
+      this.imageHeight = this.fontSize;
     },
 
     saveContent(e) {
+      if (
+        e.target.parentNode.parentNode.querySelector(".edit-box").innerText ==
+          "" &&
+        this.imageFile === null
+      ) {
+        this.dataSaved = true;
+        this.dataMessage = "sorry data can't be empty";
+        setTimeout(() => {
+          this.dataSaved = false;
+        }, 1900);
+        return;
+      }
+      this.dataMessage = "data saved";
+
       this.dataSaved = true;
-      console.log(
-        e.target.parentNode.parentNode.querySelector(".edit-box").innerText
-      );
 
       let savedObject = {
         text: e.target.parentNode.parentNode.querySelector(".edit-box")
@@ -181,7 +212,6 @@ export default {
 
       allSavedData = JSON.parse(allSavedData);
 
-
       if (this.editStatus) {
         let newIndex = allSavedData.indexOf(allSavedData[this.editData.index]);
         if (newIndex !== -1) {
@@ -193,6 +223,7 @@ export default {
           JSON.stringify(allSavedData)
         );
         localStorage.setItem("editDataStatus", JSON.stringify(false));
+        localStorage.setItem("editDataSuccessDiv", JSON.stringify(true));
         setTimeout(() => {
           this.$router.push("/list");
         }, 2000);
@@ -208,19 +239,26 @@ export default {
       );
       setTimeout(() => {
         this.dataSaved = false;
-      }, 2000);
-      localStorage.setItem("editDataStatus", JSON.stringify(true));
-      this.$router.push("/list");
+        this.$router.push("/list");
+      }, 1500);
     },
 
-
     insertImage(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imageFile = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      let fileSize = e.target.files[0].size / 1024 / 1024;
+      console.log(fileSize);
+      if (fileSize > 2) {
+        this.dataSaved = true;
+        this.dataMessage = "sorry the  image is too large (max 2mb)";
+        return;
+      } else {
+         this.dataSaved = false;
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageFile = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
     },
   },
 
@@ -234,13 +272,16 @@ export default {
 
     if (this.editStatus) {
       this.localStorageContent = savedDataFromLocalStorage.text;
-      this.imageHeight = savedDataFromLocalStorage.imageHeight;
+      this.imageHeight =
+        savedDataFromLocalStorage.imageHeight == null
+          ? this.imageHeight
+          : savedDataFromLocalStorage.imageHeight;
       this.editData = savedDataFromLocalStorage;
       if (savedDataFromLocalStorage.image !== null) {
         this.imageFile = savedDataFromLocalStorage.image;
       }
     }
-
+    localStorage.setItem("editDataSuccessDiv", JSON.stringify(false));
   },
 };
 </script>
@@ -252,19 +293,37 @@ $white: #fff;
   font-size: 35px;
 }
 
-.pointer {
-  cursor: pointer;
+.absolute-pos {
+  position: absolute !important;
 }
 
 .text-editor {
   text-align: left;
   background: $white;
-  min-height: 400px;
+  min-height: 200px;
   max-width: 500px;
+  overflow: hidden;
   min-width: 500px;
   margin: 0 auto;
   position: absolute;
   box-shadow: 0 4px 8px rgba(59, 64, 69, 0.2) !important;
+  @media (max-width: 991px) {
+    position: relative;
+    left: 0px !important;
+    top: 20px !important;
+    max-width: 350px;
+    min-width: 350px;
+  }
+}
+.margin-right-5 {
+  margin-right: 5px;
+}
+.drag-div {
+  min-height: 50px;
+  background: #f2f2f2;
+  display: flex;
+  cursor: move;
+  justify-content: center;
 }
 
 .save-btn {
