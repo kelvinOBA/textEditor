@@ -23,6 +23,7 @@
         :key="index+1"
       >
         <p>{{ data.text }}</p>
+        <p style="font-size:12px; color:#bab2b2"> {{ data.dateCreated }}</p>
         <img :src="data.image" :height="data.imageHeight" alt="" v-if="data.image !== null" />
         <div class="margin-20">
             <button @click="viewData(data, index)" class="crud-btn view-bg">view</button>

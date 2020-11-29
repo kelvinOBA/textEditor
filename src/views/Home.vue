@@ -206,6 +206,7 @@ export default {
           .innerText,
         image: this.imageFile !== null ? this.imageFile : null,
         imageHeight: this.imageFile !== null ? this.imageHeight : null,
+        dateCreated:new Date().toLocaleTimeString()
       };
 
       let allSavedData = localStorage.getItem("allSavedDataFromLocalStorage");
