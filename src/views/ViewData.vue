@@ -10,7 +10,7 @@
 
       <div class="shadow data-item animate__animated animate__fadeInUp" v-if="savedData">
         <p>{{ savedData.text }}</p>
-          <p style="font-size:12px; color:#bab2b2"> {{ savedData.dateCreated }}</p>
+          <p style="font-size:12px; color:#bab2b2"> {{ savedData.dateCreated | formatTime}}</p>
         <img
           :src="savedData.image"
           :height="savedData.imageHeight"
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   name: "Home",
 
@@ -61,7 +62,11 @@ localStorage.setItem('editDataStatus', JSON.stringify(false))
     },
   },
 
-  
+    filters: {
+    formatTime: function(date) {
+      return moment(date).format("h:mma");
+    },
+  },
 
   mounted() {
     let AllSavedDataFromLocalStorage = localStorage.getItem(

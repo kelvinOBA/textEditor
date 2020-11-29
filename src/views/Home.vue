@@ -51,9 +51,13 @@
       </div>
 
       <div class="text-menu shadow">
-        <button class="pointer save-btn" @click="saveContent($event)">
+        <div>
+
+    <button class="pointer save-btn" @click="saveContent($event)">
           save
         </button>
+        </div>
+    
         <div>
           <input
             type="color"
@@ -185,8 +189,9 @@ export default {
     },
 
     saveContent(e) {
+
       if (
-        e.target.parentNode.parentNode.querySelector(".edit-box").innerText ==
+        e.target.parentNode.parentNode.parentNode.querySelector(".edit-box").innerText ==
           "" &&
         this.imageFile === null
       ) {
@@ -200,14 +205,15 @@ export default {
       this.dataMessage = "data saved";
 
       this.dataSaved = true;
-
+  
       let savedObject = {
-        text: e.target.parentNode.parentNode.querySelector(".edit-box")
+        text: e.target.parentNode.parentNode.parentNode.querySelector(".edit-box")
           .innerText,
         image: this.imageFile !== null ? this.imageFile : null,
         imageHeight: this.imageFile !== null ? this.imageHeight : null,
-        dateCreated:new Date().toLocaleTimeString()
+        dateCreated:new Date()
       };
+
 
       let allSavedData = localStorage.getItem("allSavedDataFromLocalStorage");
 
