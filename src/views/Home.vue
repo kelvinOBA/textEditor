@@ -252,7 +252,7 @@ export default {
 
     insertImage(e) {
       let fileSize = e.target.files[0].size / 1024 / 1024;
-      console.log(fileSize);
+
       if (fileSize > 2) {
         this.dataSaved = true;
         this.dataMessage = "sorry the  image is too large (max 2mb)";
