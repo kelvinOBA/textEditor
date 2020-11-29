@@ -84,7 +84,7 @@ this.$router.push('/')
   },
   filters: {
     formatTime: function(date) {
-      return moment(date).format("h:mma");
+      return moment(date).format("ddd, D-MM-YYYY, h:mma");
     },
   },
   mounted() {
